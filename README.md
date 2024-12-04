@@ -1,3 +1,7 @@
+# Ansible Role ile Kubernetes Cluster Kurulumu (RKE2)
+
+Bu rehber, Lablabs Ansible Role kullanarak 1 MASTER ve 2 WORKER RKE2 kurulumunu anlatmaktadır.
+
 ## Sanal Makinelerin Kurulumu
 Makine kurulumları için gerekli VM'ler şunlardır:
 
@@ -69,7 +73,7 @@ Bu adımdan sonra ssh ile bağlanarak bağlantıyı test etmeyi unutmayın.
 
 Workplane'de rolü klonladığımız dizin altında inventory dosyamızı oluşturabiliriz. Inventory dosyasını ise sahip olduğumuz konfigürasyona göre şu şekilde tanımlayabiliriz:
 
-```toml
+```ini
 [masters]
 master-01 ansible_host=192.168.1.101
 
@@ -90,7 +94,7 @@ ansible all -i inventory.ini -m ping
 
 Sürekli olarak inventory dosya yolunu tanımlamak yerine bunları __ansible.cfg__ dosyasını oluşturarak default olarak kullanılan parametreleri burada tanımlayabiliriz.
 
-```toml
+```ini
 [defaults]
 
 inventory = ./inventory.ini
@@ -120,13 +124,12 @@ Burada one server(master) and several agent(worker) nodes şeklinde çalışaca�
     rke2_airgap_mode: false
     rke2_servers_group_name: masters
     rke2_agents_group_name: workers
-    rke2_api_ip: "{{ hostvars[groups[rke2_servers_group_name].0]['ansible_default_ipv4']['address'] }}"
+    rke2_api_ip: "{{ hostvars[groups[rke2_servers_group_name][0]]['ansible_default_ipv4']['address'] }}"
     rke2_download_kubeconf: true
 
   roles:
     - name: lablabs-rke2
-      #/path/to/cloned/rke2
-	  role_path: ./ 
+      role_path: ./
 ```
 
 Playbook çalıştırılarak cluster'ın ayağa kalkması sağlanır.
